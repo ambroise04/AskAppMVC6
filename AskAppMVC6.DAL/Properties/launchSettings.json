@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AskAppMVC6.DAL": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "SqliteConnection": "Data Source=AskApp.db"
+      }
+    }
+  }
+}
