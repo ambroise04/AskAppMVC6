@@ -7,13 +7,15 @@ using System.Linq;
 
 namespace AskAppMVC6.DAL.Repositories
 {
-    public class ResponseRepository : Persistance, IRepository<Response>
+    public class ResponseRepository : Persistance, IRepository<Response>, IResponseRepository
     {
         private readonly ApplicationContext context;
+        private readonly Persistance persistance;
 
         public ResponseRepository(ApplicationContext context) : base(context)
         {
             this.context = context ?? throw new ArgumentNullException(nameof(context));
+            persistance = new Persistance(context);
         }
 
         public bool Delete(Response entity)
@@ -36,7 +38,7 @@ namespace AskAppMVC6.DAL.Repositories
                 throw new ArgumentException();
 
             var response = context.Responses
-                                   .Include(r => r.Question)                                  
+                                   .Include(r => r.Question)
                                    .Include(r => r.Responder)
                                    .FirstOrDefault(r => r.Id == id);
 
@@ -86,6 +88,11 @@ namespace AskAppMVC6.DAL.Repositories
             context.Responses.Attach(entity).State = EntityState.Modified;
 
             return entity;
+        }
+
+        public void SaveChanges()
+        {
+            persistance.Save();
         }
     }
 }

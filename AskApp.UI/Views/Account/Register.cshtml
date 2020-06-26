@@ -1,0 +1,39 @@
+﻿@model RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="row d-flex justify-content-center mt-4">
+    <div class="col-md-6">
+        <form class="border form-border-my-blue p-5" asp-controller="Account" asp-action="Register" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+            <p class="h4 mb-4 text-center">Registration</p>
+            <div asp-validation-summary="ModelOnly" class="mb-3 text-danger text-left"></div>
+            <div class="form-row mb-4">
+                <div class="col">
+                    <input asp-for="FirstName" class="form-control" placeholder="First name">
+                    <span asp-validation-for="FirstName" class="text-danger text-left"></span>
+                </div>
+                <div class="col">
+                    <input asp-for="LastName" class="form-control" placeholder="Last name">
+                    <span asp-validation-for="LastName" class="text-danger text-left"></span>
+                </div>
+            </div>
+            <input asp-for="Email" class="form-control" placeholder="E-mail">
+            <span asp-validation-for="Email" class="text-danger text-left"></span>
+            <div class="form-row my-4">
+                <div class="col">
+                    <input asp-for="Password" class="form-control" placeholder="Password" aria-describedby="PasswordHelpBlock">
+                    <span asp-validation-for="Password" class="text-danger text-left"></span>
+                    <small id="PasswordHelpBlock" class="form-text text-muted mb-4">
+                        At least 6 characters and 1 digit
+                    </small>
+                </div>
+                <div class="col">
+                    <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm password" aria-describedby="PasswordHelpBlock">
+                    <span asp-validation-for="ConfirmPassword" class="text-danger text-left"></span>
+                </div>
+            </div>
+            <button class="btn btn-my-blue my-4 btn-block" type="submit">Sign in</button>
+        </form>
+    </div>
+</div>

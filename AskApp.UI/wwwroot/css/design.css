@@ -1,0 +1,93 @@
+﻿.my-blue-color {
+    color: #134a54 !important;
+}
+
+.my-bg-blue-color {
+    background-color: #134a54 !important;
+}
+
+.my-white-color {
+    color: #f2f5f5 !important;
+}
+
+.my-bg-white-color {
+    background-color: #ccf4fa !important;
+}
+
+.link {
+    cursor: pointer;
+}
+
+.grey-text {
+    color: #8b8b8b;
+}
+
+.desc-text {
+    font-size: .8em;
+}
+
+.action:hover {
+    color: #f2f5f5 !important;
+}
+
+.btn-outline-white {
+    color: white;
+    border-color: white;
+}
+
+.btn-outline-white:hover {
+    color: #a7a7a7;
+    border-color: #a7a7a7;
+}
+
+.btn-outline-blue {
+    color: #134a54;
+    border-color: #134a54;
+}
+
+.btn-outline-blue:hover {
+    color: white !important;
+    border-color: white !important;
+    background-color: #134a54;
+}
+
+.a-outline-blue {
+    color: #134a54;
+    border-color: #134a54;
+}
+
+.a-outline-blue:hover {
+    text-decoration:none !important;
+    color: white !important;
+    border-color: white !important;
+    background-color: #134a54;
+}
+
+.form-border-my-blue {
+    border-color: #134a54;
+}
+
+.btn-my-blue {
+    color: white;
+    background-color: #134a54;
+}
+
+.btn-my-blue:hover {
+    color: #a7a7a7;
+    background-color: #134a54;
+}
+
+.form-control:focus {
+    color: #495057;
+    background-color: #fff;
+    border-color: #134a54;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(19, 74, 84,.40);
+}
+
+@media (max-width: 768px) {
+    .posted-info {
+        justify-content: space-between;
+        margin-bottom: 1em;
+    }
+}

@@ -1,10 +1,12 @@
 ﻿using AskAppMVC6.DAL.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 
 namespace AskAppMVC6.DAL.Context
 {
-    public class ApplicationContext : DbContext
+    public class ApplicationContext : IdentityDbContext<ApplicationUser, IdentityRole, string>
     {
         public ApplicationContext(){}
 

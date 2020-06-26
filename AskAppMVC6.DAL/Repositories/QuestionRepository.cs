@@ -7,13 +7,15 @@ using System.Linq;
 
 namespace AskAppMVC6.DAL.Repositories
 {
-    public class QuestionRepository : Persistance, IRepository<Question>
+    public class QuestionRepository : Persistance, IRepository<Question>, IQuestionRepository
     {
         private readonly ApplicationContext context;
+        private readonly Persistance persistance;
 
         public QuestionRepository(ApplicationContext context) : base(context)
         {
             this.context = context ?? throw new ArgumentNullException(nameof(context));
+            persistance = new Persistance(context);
         }
 
         public bool Delete(Question entity)
@@ -40,7 +42,7 @@ namespace AskAppMVC6.DAL.Repositories
                                   .Include(q => q.Responses)
                                   .ThenInclude(r => r.Responder)
                                   .FirstOrDefault(q => q.Id == id);
-                
+
             return question;
         }
 
@@ -62,14 +64,15 @@ namespace AskAppMVC6.DAL.Repositories
                                    .Include(q => q.Responses)
                                    .ThenInclude(r => r.Responder)
                                    .Where(q => !q.IsDeleted)
-                                   .Where(predicate);
+                                   .Where(predicate)
+                                   .OrderByDescending(q => q.PostDate);
 
             return questions.ToList();
         }
 
         public Question Insert(Question entity)
         {
-            if (entity is null)            
+            if (entity is null)
                 throw new ArgumentNullException(nameof(entity));
 
             var entityEntry = context.Questions.Add(entity);
@@ -88,6 +91,10 @@ namespace AskAppMVC6.DAL.Repositories
             context.Questions.Attach(entity).State = EntityState.Modified;
 
             return entity;
+        }
+        public void SaveChanges()
+        {
+            persistance.Save();
         }
     }
 }

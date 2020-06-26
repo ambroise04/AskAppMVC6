@@ -1,0 +1,26 @@
+﻿@model LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="row d-flex justify-content-center mt-4">
+    <div class="col-md-6">
+        <form class="border form-border-my-blue p-5" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+            <p class="h4 mb-4 text-center">Sign in</p>
+            <div asp-validation-summary="ModelOnly" class="mb-3 text-danger"></div>
+            <input type="email" asp-for="Email" class="form-control" placeholder="E-mail">
+            <span asp-validation-for="Email" class="text-danger"></span>
+            <input type="password" asp-for="Password" class="form-control mt-4" placeholder="Password">
+            <span asp-validation-for="Password" class="text-danger"></span>
+            <div class="d-flex mt-4">
+                <div>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" asp-for="RememberMe">
+                        <label class="custom-control-label" asp-for="RememberMe">Remember me</label>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-my-blue btn-block my-4" type="submit">Sign in</button>
+        </form>
+    </div>
+</div>
