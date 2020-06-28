@@ -27,6 +27,7 @@ function listing(questions) {
                         <p class="grey-text desc-text"><i class="far fa-clock mr-1"></i>Answer posted ${response.elapsedTime}</p>
                     </div>
                 </div>
+                <hr style="background-color: white;"/>
             `
         })
         content += `
@@ -45,11 +46,11 @@ function listing(questions) {
                                     </div>
                                     <div class="col-md-3 d-flex flex-sm-row flex-md-column posted-info">
                                         <p class="grey-text mb-0 desc-text"><i class="far fa-clock mr-1"></i>${question.elapsedTime}</p>
-                                        <p class="grey-text my-0 desc-text"><i class="far fa-comment-dots mr-1"></i>Number of reponses : <span class="my-blue-color">0</span></p>
+                                        <p class="grey-text my-0 desc-text"><i class="far fa-comment-dots mr-1"></i>Number of reponses : <span class="my-blue-color">${question.numberOfResponses}</span></p>
                                     </div>
                                     <div class="col-md-3 text-right d-flex flex-sm-row flex-md-column justify-content-between align-items-center">
-                                        <a class="btn btn-sm btn-outline-info action"><i class="fas fa-reply mr-1"></i> Answer</a>
-                                        <a class="btn btn-sm btn-outline-danger action"><i class="far fa-trash-alt mr-1"></i>Delete</a>
+                                        <a class="btn btn-sm btn-outline-info action" target="${question.id}" onclick="answer(this, event)"><i class="fas fa-reply mr-1"></i> Answer</a>
+                                        <a class="btn btn-sm btn-outline-danger action ${question.disableDeletion}" target="${question.id}" onclick="del(this, event)"><i class="far fa-trash-alt mr-1"></i>Delete</a>
                                     </div>
                                     <hr />
                                 </div>

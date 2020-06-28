@@ -25,6 +25,11 @@ namespace AskAppMVC6.BL.UseCases.General
             return questionRepository.Update(question);
         }
 
+        public Question GetQuestionById(int id)
+        {
+            return questionRepository.Get(id);
+        }
+
         public ICollection<Question> GetNotResolvedQuestions()
         {
             return questionRepository.GetByPredicate(q => q.State != QuestionState.Resolved);

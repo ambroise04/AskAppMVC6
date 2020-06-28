@@ -9,5 +9,7 @@ namespace AskAppMVC6.UI.Models
         public string Message { get; set; }
         public string ElapsedTime { get; set; }
         public ICollection<ResponseViewModel> Responses { get; set; }
+        public int NumberOfResponses { get; set; }
+        public string DisableDeletion { get; set; }
     }
 }

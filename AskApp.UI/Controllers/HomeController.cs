@@ -1,4 +1,5 @@
 ﻿using AskAppMVC6.BL.UseCases.General;
+using AskAppMVC6.Common;
 using AskAppMVC6.Common.Enumerations;
 using AskAppMVC6.DAL.Entities;
 using AskAppMVC6.DAL.Repositories;
@@ -11,23 +12,30 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace AskAppMVC6.UI.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IQuestionRepository _questionRepository;
         public GeneralCases generalCase ;
 
-        public HomeController(ILogger<HomeController> logger, IQuestionRepository questionRepository, UserManager<ApplicationUser> userManager)
+        public HomeController(ILogger<HomeController> logger, 
+            IQuestionRepository questionRepository, 
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager)
         {
             _logger = logger;
             _userManager = userManager;
             _questionRepository = questionRepository;
             generalCase = new GeneralCases(_questionRepository);
+            _signInManager = signInManager;
         }
         
         public IActionResult Index()
@@ -38,12 +46,15 @@ namespace AskAppMVC6.UI.Controllers
         [HttpGet]
         public IActionResult GetQuestions()
         {
+            var currentUser = _userManager.GetUserAsync(User).Result;
+            var isAdmin = _userManager.IsInRoleAsync(currentUser, Roles.Admin.ToString()).Result;
+
             var questions = generalCase.GetNotResolvedQuestions();
             var viewQuestions = new List<QuestionViewModel>();
             foreach (var qst in questions)
             {
                 var responses = new List<ResponseViewModel>();
-                foreach (var response in qst.Responses)
+                foreach (var response in qst.Responses.OrderByDescending(r => r.DateOfResponse))
                 {
                     responses.Add(new ResponseViewModel
                     {
@@ -59,7 +70,9 @@ namespace AskAppMVC6.UI.Controllers
                     Message = qst.Message,
                     Publisher = string.Concat(qst.Requester.FirstName, " ", qst.Requester.LastName),
                     ElapsedTime = qst.PostDate.ElapsedTime(),
-                    Responses = responses
+                    Responses = responses,
+                    NumberOfResponses = responses.Count(),
+                    DisableDeletion = (qst.Requester.Id.Equals(currentUser.Id) || isAdmin) ? "" : "d-none"
                 });
             }
            
@@ -95,6 +108,69 @@ namespace AskAppMVC6.UI.Controllers
             return Json(new { status = false, message = "Message posted"});
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Reply(int target, string message)
+        {
+            if (target <= 0 || string.IsNullOrEmpty(message))
+                return Json(new { status = false, message = "An error related to the arguments was encountered. Please try again." });
+
+            var question = generalCase.GetQuestionById(target);
+            if (question is null)
+                return Json(new { status = false, message = "No question was found." });
+
+            var response = new Response
+            {
+                Message = message,
+                DateOfResponse = DateTime.Now,
+                IsDeleted = false,
+                Question = question,
+                Responder = _userManager.GetUserAsync(User).Result
+            };
+
+            try
+            {
+                if (question.Responses is null)
+                    question.Responses = new List<Response>();
+
+                var result = generalCase.AddResponse(question, response);
+                _questionRepository.SaveChanges();
+
+                if (result is null)
+                    return Json(new { status = false, message = "Sorry, an error was encountered. Please try again later." });
+
+                return Json(new { status = true, message = "Your response has been sent successfully." });
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        [HttpPost]
+        public IActionResult Delete(int id)
+        {
+            if (id <= 0 )
+                return Json(new { status = false, message = "An error related to the arguments was encountered. Please try again." });
+
+            var question = generalCase.GetQuestionById(id);
+            if (question is null)
+                return Json(new { status = false, message = "No question was found." });
+
+            try
+            {         
+                var result = generalCase.DeleteQuestion(question);
+                _questionRepository.SaveChanges();
+
+                if (result)                   
+                    return Json(new { status = true, message = "Question deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            return Json(new { status = false, message = "Sorry, an error was encountered. Please try again later." });
+        }
         public IActionResult Privacy()
         {
             return View();
