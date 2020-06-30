@@ -1,6 +1,7 @@
 using AskAppMVC6.DAL.Context;
 using AskAppMVC6.DAL.Entities;
 using AskAppMVC6.DAL.Repositories;
+using AskAppMVC6.UI.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -27,6 +28,8 @@ namespace AskAppMVC6.UI
 
             services.AddControllersWithViews();
 
+            services.AddSignalR();
+
             services.AddDbContext<ApplicationContext>();
 
             services.AddIdentityCore<ApplicationUser>(o =>
@@ -51,6 +54,7 @@ namespace AskAppMVC6.UI
 
             services.AddTransient<IQuestionRepository, QuestionRepository>();
             services.AddTransient<IResponseRepository, ResponseRepository>();
+            services.AddSingleton<QuestionHub>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -85,6 +89,7 @@ namespace AskAppMVC6.UI
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapHub<QuestionHub>("/refresh");
             });
         }
 

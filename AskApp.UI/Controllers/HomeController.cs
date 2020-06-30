@@ -5,9 +5,11 @@ using AskAppMVC6.DAL.Entities;
 using AskAppMVC6.DAL.Repositories;
 using AskAppMVC6.UI.Extensions;
 using AskAppMVC6.UI.Models;
+using AskAppMVC6.UI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -24,18 +26,21 @@ namespace AskAppMVC6.UI.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IQuestionRepository _questionRepository;
+        private readonly IHubContext<QuestionHub> _hubContext;
         public GeneralCases generalCase ;
 
         public HomeController(ILogger<HomeController> logger, 
             IQuestionRepository questionRepository, 
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            IHubContext<QuestionHub> hubContext)
         {
             _logger = logger;
             _userManager = userManager;
             _questionRepository = questionRepository;
             generalCase = new GeneralCases(_questionRepository);
             _signInManager = signInManager;
+            _hubContext = hubContext;
         }
         
         public IActionResult Index()
@@ -97,6 +102,7 @@ namespace AskAppMVC6.UI.Controllers
                 _questionRepository.SaveChanges();
                 if (result != null)
                 {
+                    await _hubContext.Clients.All.SendAsync("Refresh");
                     return Json(new { status = true, message = "Message posted" });
                 }
             }
@@ -110,7 +116,7 @@ namespace AskAppMVC6.UI.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Reply(int target, string message)
+        public async Task<IActionResult> Reply(int target, string message)
         {
             if (target <= 0 || string.IsNullOrEmpty(message))
                 return Json(new { status = false, message = "An error related to the arguments was encountered. Please try again." });
@@ -139,6 +145,7 @@ namespace AskAppMVC6.UI.Controllers
                 if (result is null)
                     return Json(new { status = false, message = "Sorry, an error was encountered. Please try again later." });
 
+                await _hubContext.Clients.All.SendAsync("Refresh");
                 return Json(new { status = true, message = "Your response has been sent successfully." });
             }
             catch (Exception ex)
@@ -148,7 +155,7 @@ namespace AskAppMVC6.UI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             if (id <= 0 )
                 return Json(new { status = false, message = "An error related to the arguments was encountered. Please try again." });
@@ -162,8 +169,11 @@ namespace AskAppMVC6.UI.Controllers
                 var result = generalCase.DeleteQuestion(question);
                 _questionRepository.SaveChanges();
 
-                if (result)                   
+                if (result)
+                {
+                    await _hubContext.Clients.All.SendAsync("Refresh");
                     return Json(new { status = true, message = "Question deleted successfully." });
+                }                 
             }
             catch (Exception ex)
             {
