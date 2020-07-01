@@ -83,8 +83,7 @@ namespace AskAppMVC6.UI.Controllers
            
             return Json(new { questions = viewQuestions });
         }
-
-        [Authorize]
+        
         public async Task<IActionResult> Create(string message)
         {
             var user = await _userManager.GetUserAsync(User);
@@ -108,6 +107,7 @@ namespace AskAppMVC6.UI.Controllers
             }
             catch (Exception ex)
             {
+                LogError(ex);
                 return Json(new { status = false, message = "Message posted" });
             }
 
@@ -143,14 +143,18 @@ namespace AskAppMVC6.UI.Controllers
                 _questionRepository.SaveChanges();
 
                 if (result is null)
+                {
                     return Json(new { status = false, message = "Sorry, an error was encountered. Please try again later." });
+                }
 
                 await _hubContext.Clients.All.SendAsync("Refresh");
+                _logger.LogInformation("Response added successfully");
                 return Json(new { status = true, message = "Your response has been sent successfully." });
             }
             catch (Exception ex)
             {
-                throw;
+                LogError(ex);
+                return Json(new { status = false, message = "Sorry, an error was encountered. Please try again later." });
             }
         }
 
@@ -177,7 +181,7 @@ namespace AskAppMVC6.UI.Controllers
             }
             catch (Exception ex)
             {
-                throw;
+                LogError(ex);
             }
             return Json(new { status = false, message = "Sorry, an error was encountered. Please try again later." });
         }
@@ -190,6 +194,11 @@ namespace AskAppMVC6.UI.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        private void LogError(Exception exception)
+        {
+            _logger.LogError(exception, "An error occurs");
         }
     }
 }

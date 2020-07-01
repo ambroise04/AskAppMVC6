@@ -74,6 +74,7 @@ namespace AskAppMVC6.UI
             }            
 
             app.UseHttpsRedirection();
+            
             app.UseStaticFiles();
 
             app.UseAuthentication();
