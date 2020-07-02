@@ -49,12 +49,12 @@ namespace AskAppMVC6.UI.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetQuestions()
+        public IActionResult GetQuestions(string search)
         {
             var currentUser = _userManager.GetUserAsync(User).Result;
             var isAdmin = _userManager.IsInRoleAsync(currentUser, Roles.Admin.ToString()).Result;
 
-            var questions = generalCase.GetNotResolvedQuestions();
+            var questions = string.IsNullOrEmpty(search) ? generalCase.GetNotResolvedQuestions() : generalCase.GetSearchResult(search);
             var viewQuestions = new List<QuestionViewModel>();
             foreach (var qst in questions)
             {

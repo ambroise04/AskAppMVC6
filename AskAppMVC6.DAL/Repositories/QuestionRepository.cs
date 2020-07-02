@@ -65,7 +65,7 @@ namespace AskAppMVC6.DAL.Repositories
                                    .ThenInclude(r => r.Responder)
                                    .Where(q => !q.IsDeleted)
                                    .Where(predicate)
-                                   .OrderByDescending(q => q.PostDate);
+                                   .OrderBy(q => q.PostDate);
 
             return questions.ToList();
         }

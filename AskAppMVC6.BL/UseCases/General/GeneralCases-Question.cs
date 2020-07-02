@@ -39,5 +39,12 @@ namespace AskAppMVC6.BL.UseCases.General
         {
             return questionRepository.GetByPredicate(q => q.State == QuestionState.Resolved);
         }
+
+        public ICollection<Question> GetSearchResult(string key)
+        {
+            return questionRepository.GetByPredicate(q => q.State != QuestionState.Resolved
+                            && (q.Message.ToLower().Contains(key.Trim().ToLower()) 
+                                || string.Concat(q.Requester.FirstName, " ", q.Requester.LastName).ToLower().Contains(key.Trim().ToLower())));
+        }
     }
 }
