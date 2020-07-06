@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AskAppMVC6.DAL.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20200706074842_v1_AddIsTheBestPropToResponse")]
+    [Migration("20200706075237_v1_AddIsTheBestPropToResponse")]
     partial class v1_AddIsTheBestPropToResponse
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

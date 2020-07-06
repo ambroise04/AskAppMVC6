@@ -26,8 +26,9 @@ namespace AskAppMVC6.UI.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IQuestionRepository _questionRepository;
+        private readonly IQuestionRepository _responseRepository;
         private readonly IHubContext<QuestionHub> _hubContext;
-        public GeneralCases generalCase ;
+        public GeneralCases generalCase;
 
         public HomeController(ILogger<HomeController> logger, 
             IQuestionRepository questionRepository, 
@@ -64,10 +65,12 @@ namespace AskAppMVC6.UI.Controllers
                     responses.Add(new ResponseViewModel
                     {
                         Id = response.Id,
+                        QuestionId = qst.Id,
                         Message = response.Message,
                         ElapsedTime = response.DateOfResponse.ElapsedTime(),
                         Responder = string.Concat(response.Responder.FirstName, " ", response.Responder.LastName),
-                        IsTheBest = response.IsTheBest
+                        IsTheBest = response.IsTheBest,
+                        CanBeMarkedAsTheBest = (!response.IsTheBest) && (qst.Requester.Id.Equals(currentUser.Id) || isAdmin) ? "" : "d-none"
                     });
                 }
                 viewQuestions.Add(new QuestionViewModel
@@ -103,16 +106,16 @@ namespace AskAppMVC6.UI.Controllers
                 if (result != null)
                 {
                     await _hubContext.Clients.All.SendAsync("Refresh");
-                    return Json(new { status = true, message = "Message posted" });
+                    return Json(new { status = true, message = "Message posted successfully" });
                 }
             }
             catch (Exception ex)
             {
                 LogError(ex);
-                return Json(new { status = false, message = "Message posted" });
+                return Json(new { status = false, message = "Sorry, an error was encountered. Please try again later." });
             }
 
-            return Json(new { status = false, message = "Message posted"});
+            return Json(new { status = false, message = "Sorry, an error was encountered. Please try again later." });
         }
 
         [HttpPost]
@@ -179,6 +182,37 @@ namespace AskAppMVC6.UI.Controllers
                     await _hubContext.Clients.All.SendAsync("Refresh");
                     return Json(new { status = true, message = "Question deleted successfully." });
                 }                 
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+            }
+            return Json(new { status = false, message = "Sorry, an error was encountered. Please try again later." });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangeBest(int responseId, int questionId)
+        {
+            var question = generalCase.GetQuestionById(questionId);
+
+            var currentBest = question.Responses.FirstOrDefault(r => r.IsTheBest);
+            if (currentBest != null)            
+                currentBest.IsTheBest = false;     
+            
+            var newBest = question.Responses.FirstOrDefault(r => r.Id == responseId);
+            if (newBest != null)
+                newBest.IsTheBest = true;
+
+            try
+            {
+                var result = generalCase.UpdateQuestion(question);
+                _questionRepository.SaveChanges();
+
+                if (result != null)
+                {
+                    await _hubContext.Clients.All.SendAsync("Refresh");
+                    return Json(new { status = true, message = "Response marked successfully" });
+                }
             }
             catch (Exception ex)
             {

@@ -63,7 +63,7 @@ function ResponseManagement(responses) {
     $.each(responses, function (j, response) {
         let marker = "";
         if (response.isTheBest) {
-            marker = "is-the-best";
+            marker = "is-the-best rounded";
         }
         content += `
                 <div class="row ${marker}">
@@ -73,8 +73,9 @@ function ResponseManagement(responses) {
                             ${response.message}
                         </p>
                     </div>
-                    <div class="col-md-4 d-flex justify-content-end">
+                    <div class="col-md-4 d-flex justify-content-between">
                         <p class="grey-text desc-text"><i class="far fa-clock mr-1"></i>Answer posted ${response.elapsedTime}</p>
+                        <button onclick="theBest(this)" parent="${response.questionId}" target="${response.id}" class="btn btn-sm btn-outline-info ${response.canBeMarkedAsTheBest}"><i class="fas fa-check"></i></button>
                     </div>
                 </div>
                 <hr style="background-color: white;"/>
