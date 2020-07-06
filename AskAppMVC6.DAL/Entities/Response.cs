@@ -12,6 +12,7 @@ namespace AskAppMVC6.DAL.Entities
         public ApplicationUser Responder { get; set; }
         [Required]
         public DateTime DateOfResponse { get; set; }
+        public bool IsTheBest { get; set; }
         public bool IsDeleted { get; set; }
     }
 }

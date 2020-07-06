@@ -14,22 +14,8 @@ function listing(questions) {
         if (question.responses.length == 0) {
             responseContent = "No answer to display"
         }
-        $.each(question.responses, function (j, response) {
-            responseContent += `
-                <div class="row">
-                    <div class="col-md-8">
-                        <h6 class="my-blue-color">${response.responder}</h6>
-                        <p>
-                            ${response.message}
-                        </p>
-                    </div>
-                    <div class="col-md-4 d-flex justify-content-end">
-                        <p class="grey-text desc-text"><i class="far fa-clock mr-1"></i>Answer posted ${response.elapsedTime}</p>
-                    </div>
-                </div>
-                <hr style="background-color: white;"/>
-            `
-        })
+        responseContent = ResponseManagement(question.responses);
+
         content += `
             <div class="card">
                 <div class="card-header bg-white border-bottom-0" id="headingOne">
@@ -70,4 +56,29 @@ function listing(questions) {
         show = "";
     })
     $container.html(content);
+}
+
+function ResponseManagement(responses) {
+    let content = "";
+    $.each(responses, function (j, response) {
+        let marker = "";
+        if (response.isTheBest) {
+            marker = "is-the-best";
+        }
+        content += `
+                <div class="row ${marker}">
+                    <div class="col-md-8">
+                        <h6 class="my-blue-color">${response.responder}</h6>
+                        <p>
+                            ${response.message}
+                        </p>
+                    </div>
+                    <div class="col-md-4 d-flex justify-content-end">
+                        <p class="grey-text desc-text"><i class="far fa-clock mr-1"></i>Answer posted ${response.elapsedTime}</p>
+                    </div>
+                </div>
+                <hr style="background-color: white;"/>
+            `
+    })
+    return content;
 }

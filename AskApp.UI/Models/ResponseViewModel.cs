@@ -6,5 +6,6 @@
         public string Responder { get; set; }
         public string Message { get; set; }
         public string ElapsedTime { get; set; }
+        public bool IsTheBest { get; set; }
     }
 }

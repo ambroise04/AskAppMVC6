@@ -14,6 +14,10 @@
     background-color: #ccf4fa !important;
 }
 
+.is-the-best{
+     background-color : seagreen;
+}
+
 .link {
     cursor: pointer;
 }

@@ -59,7 +59,7 @@ namespace AskAppMVC6.UI.Controllers
             foreach (var qst in questions)
             {
                 var responses = new List<ResponseViewModel>();
-                foreach (var response in qst.Responses.OrderByDescending(r => r.DateOfResponse))
+                foreach (var response in qst.Responses.OrderByDescending(r => r.IsTheBest).ThenByDescending(r => r.DateOfResponse))
                 {
                     responses.Add(new ResponseViewModel
                     {
@@ -67,6 +67,7 @@ namespace AskAppMVC6.UI.Controllers
                         Message = response.Message,
                         ElapsedTime = response.DateOfResponse.ElapsedTime(),
                         Responder = string.Concat(response.Responder.FirstName, " ", response.Responder.LastName),
+                        IsTheBest = response.IsTheBest
                     });
                 }
                 viewQuestions.Add(new QuestionViewModel
