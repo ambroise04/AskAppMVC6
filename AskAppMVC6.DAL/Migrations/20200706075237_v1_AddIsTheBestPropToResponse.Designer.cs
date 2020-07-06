@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AskAppMVC6.DAL.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20200626155246_v2")]
-    partial class v2
+    [Migration("20200706075237_v1_AddIsTheBestPropToResponse")]
+    partial class v1_AddIsTheBestPropToResponse
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -127,6 +127,9 @@ namespace AskAppMVC6.DAL.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsTheBest")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Message")

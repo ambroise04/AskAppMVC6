@@ -127,6 +127,9 @@ namespace AskAppMVC6.DAL.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("IsTheBest")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Message")
                         .HasColumnType("TEXT");
 

@@ -4,6 +4,7 @@ function ask_question(obj, event) {
 
     let data = $("#form-ask-question").serialize();
     save(data)
+    $("#form-ask-question").trigger("reset");
 }
 
 function save(data) {
@@ -13,7 +14,11 @@ function save(data) {
         dataType: "json",
         data: data,
         success: function (data) {
-            getQuestions();
+            if (data["status"]) {
+                toastr.success(data["message"])
+            } else {
+                toastr.error(message);
+            }
         },
         error: function (xhr) {
             console.log(xhr.responseText);
